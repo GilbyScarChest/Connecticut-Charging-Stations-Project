@@ -22,21 +22,4 @@ d3.json(link, function(data) {
     }).addTo(map);
 })
 
-
-// for (var lat = 0; lat < data.Lat; lat++){
-  
-
-//   L.marker([lat, longs], {
-//     draggable: true,
-//     title: "Markers"
-//   }).addTo(myMap);
-// }
-
-
-// d3.select("#map").forEach(function() {
-//   var location = {
-//     latlng: 
-//   }
-// })
-
   
