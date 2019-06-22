@@ -1,3 +1,4 @@
+
 // Creating map object
 var map = L.map("map", {
     center: [41.6032, -72.6877],
@@ -12,7 +13,30 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
     accessToken: API_KEY
   }).addTo(map);
 
-  var marker = L.marker([trace.Lat, trace.Lon], {
+var link = "/api/data"
+
+d3.json(link, function(data) {
+  L.marker([data.Lat, data.Lon], {
     draggable: true,
     title: "Markers"
-  }).addTo(myMap);
+    }).addTo(map);
+})
+
+
+// for (var lat = 0; lat < data.Lat; lat++){
+  
+
+//   L.marker([lat, longs], {
+//     draggable: true,
+//     title: "Markers"
+//   }).addTo(myMap);
+// }
+
+
+// d3.select("#map").forEach(function() {
+//   var location = {
+//     latlng: 
+//   }
+// })
+
+  

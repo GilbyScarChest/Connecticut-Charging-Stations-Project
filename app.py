@@ -138,7 +138,9 @@ def api():
         "Lon": lon
     }
 
-    return jsonify(trace)
+    data = jsonify(trace)
+
+    return data
 
 
 
