@@ -27,9 +27,26 @@ d3.json(link, function(data) {
 
     L.marker([data.Lon[i], data.Lat[i]], {
       draggable: true,
-      title: "Markers"
-      }).bindPopup("<h1>" + data['Lacation Name'][i] + "</h1> <hr> <h3> Address: " + data['Address'][i] + "</h3>").addTo(map); 
+      title: "Markers",
+      color: "red"
+      }).bindPopup("<h1>" + data['Location Name'][i] + "</h1> <hr> <h3> <strong>Address: </strong>" + data['Address'][i] + "</h3> \n <h3> <strong>Hours: </strong>" + data['Hours'][i] + "</h3>").addTo(map); 
   }
+
+  L.geoJson(data, {
+
+    // Called on each feature
+    onEachFeature: function(feature, layer) {
+      // Set mouse events to change map styling
+      layer.on({
+        click: function(event) {
+          map.fitBounds(event.target.getBounds());
+        }
+
+      });
+
+    }
+
+  }).addTo(map)
 
 })
 
