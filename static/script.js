@@ -14,7 +14,9 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
   }).addTo(map);
 
 
-
+/////////////////////////////////////////////////////////
+// Markers
+/////////////////////////////////////////////////////////
   
 var link = "/api/data"
 
@@ -35,7 +37,7 @@ d3.json(link, function(data) {
       }).bindPopup("<h1>" + data['Location Name'][i] + "</h1> <hr> <h3> <strong>Address: </strong>" + data['Address'][i] + "</h3> \n <h3> <strong>Hours: </strong>" + data['Hours'][i] + "</h3>").addTo(map); 
   }
 
-  L.geoJson(data, {
+  L.geoJSON(data, {
 
     // Called on each feature
     onEachFeature: function(feature, layer) {
@@ -43,6 +45,7 @@ d3.json(link, function(data) {
       layer.on({
         click: function(event) {
           map.fitBounds(event.target.getBounds());
+          event.target.gaugeSetup(data.Hours);
         }
 
       });
@@ -52,10 +55,14 @@ d3.json(link, function(data) {
   }).addTo(map)
 
 
-
+  /////////////////////////////////////////////////////////
+  // Gauge Setup
+  /////////////////////////////////////////////////////////
   // Telling the gauge how to rank each Hours Str.
   function gaugeSetup(data){
     convenience = 0
+
+    console.log(data) // This works!
 
     if (data.Hours == "24 hours daily" 
       || data.Hours == "Open 24 Hours" 
@@ -94,6 +101,8 @@ d3.json(link, function(data) {
 /////////////////////////////////////////////////////////
 function buildGauge(convenience) {
 
+  console.log(convenience)
+
   // Enter a speed between 0 and 180
   var level = convenience;
   
@@ -122,7 +131,7 @@ function buildGauge(convenience) {
     { values: [50/5, 50/5, 50/5, 50/5, 50/5, 50/5, 50],
     rotation: 90,
     text: ['Very Convenient!', 'Convenient', 'Somewhat Convenient', 'Less So',
-              'Not Very'],
+              'Not Very', ''],
     textinfo: 'text',
     textposition:'inside',
     marker: {colors:['rgba(14, 127, 0, .5)', 'rgba(110, 154, 22, .5)',
@@ -154,7 +163,7 @@ function buildGauge(convenience) {
                showgrid: false, range: [-1, 1]}
   };
   
-  Plotly.newPlot('gauge', data, layout);
+  Plotly.plot('gauge', data, layout);
 }
 
 
