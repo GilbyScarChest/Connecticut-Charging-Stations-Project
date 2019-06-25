@@ -10,8 +10,8 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
     id: "mapbox.streets",
-    accessToken: API_KEY
-  }).addTo(map);
+    accessToken: API_KEY,
+}).addTo(map);
 
 
 /////////////////////////////////////////////////////////
@@ -30,31 +30,20 @@ d3.json(link, function(data) {
     // console.log(data.Lon.length) // This works!
     //console.log(data.Lat[i]) // This works!
 
-    L.marker([data.Lon[i], data.Lat[i]], {
+    var marker = L.marker([data.Lon[i], data.Lat[i]], {
       draggable: true,
       title: "Markers",
       color: "red"
-      }).bindPopup("<h1>" + data['Location Name'][i] + "</h1> <hr> <h3> <strong>Address: </strong>" + data['Address'][i] + "</h3> \n <h3> <strong>Hours: </strong>" + data['Hours'][i] + "</h3>").addTo(map); 
+      }).bindPopup("<h1>" + data['Location Name'][i] + "</h1> <hr> <h3> <strong>Address: </strong>" + data['Address'][i] + "</h3> \n <h3> <strong>Hours: </strong>" + data['Hours'][i] + "</h3>").addTo(map).on("click", clickZoom); 
   }
 
-  L.geoJSON(data, {
+  // Zoom and center on marker, then call gaugeSetup
+  function clickZoom(e) {
+    map.setView(e.target.getLatLng(),13);
+    gaugeSetup(data.Hours);
+  }
 
-    // Called on each feature
-    onEachFeature: function(feature, layer) {
-      // Set mouse events to change map styling
-      layer.on({
-        click: function(event) {
-          map.fitBounds(event.target.getBounds());
-          event.target.gaugeSetup(data.Hours);
-        }
-
-      });
-
-    }
-
-  }).addTo(map)
-
-
+  
   /////////////////////////////////////////////////////////
   // Gauge Setup
   /////////////////////////////////////////////////////////
@@ -92,9 +81,9 @@ d3.json(link, function(data) {
   // Calling gauge functions
   gaugeSetup(data.Hours);
   buildGauge(convenience);
+  
 
 })
-
 
 /////////////////////////////////////////////////////////
 // Gauge Visualization
@@ -165,6 +154,9 @@ function buildGauge(convenience) {
   
   Plotly.plot('gauge', data, layout);
 }
+
+
+
 
 
   
