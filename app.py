@@ -126,7 +126,7 @@ def api():
         lat.append(float(lat1[:-1]))
 
     trace = {
-        "Lacation Name": name,
+        "Location Name": name,
         "Address": address,
         "Hours": hours,
         "Level": level,
