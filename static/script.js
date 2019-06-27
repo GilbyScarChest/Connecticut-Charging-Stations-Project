@@ -19,9 +19,9 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 /////////////////////////////////////////////////////////
   
 var link = "/api/data"
-
+var saved_data;
 d3.json(link, function(data) {
-
+  saved_data=data;
   // console.log(data.Lon)  // This works!
   // console.log(data.Lat)  // This works!
 
@@ -35,12 +35,21 @@ d3.json(link, function(data) {
       title: "Markers",
       color: "red"
       }).bindPopup("<h1>" + data['Location Name'][i] + "</h1> <hr> <h3> <strong>Address: </strong>" + data['Address'][i] + "</h3> \n <h3> <strong>Hours: </strong>" + data['Hours'][i] + "</h3>").addTo(map).on("click", clickZoom); 
-  }
+    }
 
   // Zoom and center on marker, then call gaugeSetup
   function clickZoom(e) {
     map.setView(e.target.getLatLng(),13);
-    gaugeSetup(data.Hours);
+    var clicked_lat = (e.target.getLatLng()['lng']);
+    var clicked_lng = (e.target.getLatLng()['lat']);
+
+    console.log("got here")
+    
+    d3.selectAll('#gauge > *').remove();
+    buildGauge(gaugeSetup(clicked_lat,clicked_lng));
+    //gaugeSetup(data.Hours);
+
+
   }
 
   
@@ -48,39 +57,50 @@ d3.json(link, function(data) {
   // Gauge Setup
   /////////////////////////////////////////////////////////
   // Telling the gauge how to rank each Hours Str.
-  function gaugeSetup(data){
+  function gaugeSetup(lat,lng){
+    var data2=""
+    for (i = 0; i < saved_data.Lon.length; i++) {  
+    if (lat == saved_data.Lat[i] && lng == saved_data.Lon[i]){
+      data2 = saved_data.Hours[i]
+      console.log(lat+"     "+saved_data.Lat[i])
+      break;
+    }
+    
+  }
     convenience = 0
+    console.log(data2) // This works!
 
-    console.log(data) // This works!
-
-    if (data.Hours == "24 hours daily" 
-      || data.Hours == "Open 24 Hours" 
+    if (data2 == "24 hours daily" 
+      || data2 == "Open 24 Hours" 
     ){convenience = 5}
-    else if (data.Hours == "Open 24/7 is a pay lot"
-      || data.Hours == "Open 24 Hours-Guests Only"
+    else if (data2 == "Open 24/7 is a pay lot"
+      || data2 == "Open 24 Hours-Guests Only"
     ){convenience = 4}
-    else if (data.Hours == "5AM-2AM M-Sat, 8AM-2AM Sun"
-      || data.Hours == "Daily: 6AM-Midnight"
-      || data.Hours == "Daily: 6Am-3AM"
+    else if (data2 == "5AM-2AM M-Sat, 8AM-2AM Sun"
+      || data2 == "Daily: 6AM-Midnight"
+      || data2 == "Daily: 6Am-3AM"
     ){convenience = 3}
-    else if (data.Hours == "5AM-2AM M-Sat, 8AM-2AM Sun"
-      || data.Hours == "6 AM-11:45 PM 7 days a week"
-      || data.Hours == "8 AM-7 PM M-Thur, 8 AM-5 PM F-Sun"
-      || data.Hours == "9 AM-5 PM M-Sat"
-      || data.Hours == "9 AM-5 PM M-Th, 9 AM-2 PM F-Sat"
-      || data.Hours == "9:30 AM-5:30 PM M-Sat, 11AM-5PM Sun"
-      || data.Hours == "9:30 AM-5:30 PM M-Sat, 11AM-5PM Sun"
+    else if (data2 == "5AM-2AM M-Sat, 8AM-2AM Sun"
+      || data2 == "6 AM-11:45 PM 7 days a week"
+      || data2 == "8 AM-7 PM M-Thur, 8 AM-5 PM F-Sun"
+      || data2 == "9 AM-5 PM M-Sat"
+      || data2 == "9 AM-5 PM M-Th, 9 AM-2 PM F-Sat"
+      || data2 == "9:30 AM-5:30 PM M-Sat, 11AM-5PM Sun"
+      || data2 == "9:30 AM-5:30 PM M-Sat, 11AM-5PM Sun"
     ){convenience = 2}
     else {
       convenience = 1
     }
 
+    console.log("this is convenience");
+    console.log(convenience);
+
     return convenience
   }
 
   // Calling gauge functions
-  gaugeSetup(data.Hours);
-  buildGauge(convenience);
+  // gaugeSetup(data.Hours);
+ // buildGauge(convenience);
   
 
 })
@@ -89,8 +109,8 @@ d3.json(link, function(data) {
 // Gauge Visualization
 /////////////////////////////////////////////////////////
 function buildGauge(convenience) {
-
-  console.log(convenience)
+  
+  //console.log(convenience)
 
   // Enter a speed between 0 and 180
   var level = convenience;
@@ -117,17 +137,17 @@ function buildGauge(convenience) {
       name: 'speed',
       text: level,
       hoverinfo: 'text+name'},
-    { values: [50/5, 50/5, 50/5, 50/5, 50/5, 50/5, 50],
+    { values: [50/5, 50/5, 50/5, 50/5, 50/5,50],
     rotation: 90,
     text: ['Very Convenient!', 'Convenient', 'Somewhat Convenient', 'Less So',
-              'Not Very', ''],
+              'Not Very',''],
     textinfo: 'text',
     textposition:'inside',
     marker: {colors:['rgba(14, 127, 0, .5)', 'rgba(110, 154, 22, .5)',
                            'rgba(170, 202, 42, .5)', 'rgba(202, 209, 95, .5)',
                            'rgba(232, 226, 202, .5)',
                            'rgba(255, 255, 255, 0)']},
-    labels: ['151-180', '121-150', '91-120', '61-90', '31-60', '0-30', ''],
+    labels: ['151-180', '121-150', '91-120', '61-90', '31-60', '0-30',''],
     hoverinfo: 'label',
     hole: .5,
     type: 'pie',
@@ -151,8 +171,12 @@ function buildGauge(convenience) {
     yaxis: {zeroline:false, showticklabels:false,
                showgrid: false, range: [-1, 1]}
   };
-  
-  Plotly.plot('gauge', data, layout);
+
+  console.log(data)
+  console.log(layout)
+
+  Plotly.newPlot('gauge', data, layout);
+ 
 }
 
 

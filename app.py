@@ -25,7 +25,7 @@ engine = create_engine("sqlite:///db/data.sqlite", echo=False)
 
 # reflect an existing database into a new model
 Base = automap_base()
-print(Base)
+#print(Base)
 # reflect the tables
 Base.prepare(engine, reflect=True)
 
