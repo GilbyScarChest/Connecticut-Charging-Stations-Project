@@ -20,6 +20,7 @@ html {
 
 #map {
   height: 50%;
+  z-index: 0;
 }
 
 strong {

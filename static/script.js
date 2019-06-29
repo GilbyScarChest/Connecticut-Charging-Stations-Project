@@ -21,13 +21,14 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 var link = "/api/data"
 var saved_data;
 d3.json(link, function(data) {
+  
   saved_data=data;
   // console.log(data.Lon)  // This works!
   // console.log(data.Lat)  // This works!
 
   for (i = 0; i < data.Lon.length; i++) {
 
-    // console.log(data.Lon.length) // This works!
+    //console.log(data.Lon.length) // This works!
     //console.log(data.Lat[i]) // This works!
 
     var marker = L.marker([data.Lon[i], data.Lat[i]], {
@@ -37,19 +38,18 @@ d3.json(link, function(data) {
       }).bindPopup("<h1>" + data['Location Name'][i] + "</h1> <hr> <h3> <strong>Address: </strong>" + data['Address'][i] + "</h3> \n <h3> <strong>Hours: </strong>" + data['Hours'][i] + "</h3>").addTo(map).on("click", clickZoom); 
     }
 
-  // Zoom and center on marker, then call gaugeSetup
+  // Zoom and center on marker, then call buildGauge(gaugeSetup)
   function clickZoom(e) {
     map.setView(e.target.getLatLng(),13);
     var clicked_lat = (e.target.getLatLng()['lng']);
     var clicked_lng = (e.target.getLatLng()['lat']);
 
-    console.log("got here")
+    //console.log("got here")
     
+    // remove everything inside #gauge so we can update it with new info
     d3.selectAll('#gauge > *').remove();
+    // Calling gauge functions
     buildGauge(gaugeSetup(clicked_lat,clicked_lng));
-    //gaugeSetup(data.Hours);
-
-
   }
 
   
@@ -58,6 +58,7 @@ d3.json(link, function(data) {
   /////////////////////////////////////////////////////////
   // Telling the gauge how to rank each Hours Str.
   function gaugeSetup(lat,lng){
+
     var data2=""
     for (i = 0; i < saved_data.Lon.length; i++) {  
     if (lat == saved_data.Lat[i] && lng == saved_data.Lon[i]){
@@ -68,7 +69,8 @@ d3.json(link, function(data) {
     
   }
     convenience = 0
-    console.log(data2) // This works!
+
+    //console.log(data2) // This works!
 
     if (data2 == "24 hours daily" 
       || data2 == "Open 24 Hours" 
@@ -92,15 +94,10 @@ d3.json(link, function(data) {
       convenience = 1
     }
 
-    console.log("this is convenience");
-    console.log(convenience);
+    console.log(`convenience number is ${convenience}`);
 
     return convenience
   }
-
-  // Calling gauge functions
-  // gaugeSetup(data.Hours);
- // buildGauge(convenience);
   
 
 })
@@ -172,10 +169,7 @@ function buildGauge(convenience) {
                showgrid: false, range: [-1, 1]}
   };
 
-  console.log(data)
-  console.log(layout)
-
-  Plotly.newPlot('gauge', data, layout);
+  Plotly.newPlot('gauge', data, layout); // newPlot allows you to refresh the data
  
 }
 
